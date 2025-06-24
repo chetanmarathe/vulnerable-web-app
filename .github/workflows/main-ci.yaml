@@ -37,9 +37,6 @@ jobs:
 #      - name: Install Trufflehog
 #        run: npm init @eslint/config
 
-      - name: Install Node.js dependencies
-        run: npm init @eslint/config@latest
-
       - name: Run linters
         run: npx eslint
 #        uses: wearerequired/lint-action@v2
