@@ -31,8 +31,8 @@ jobs:
       - name: Install Trufflehog
         run: curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
-      - name: Install Trufflehog
-        run: trufflehog filesystem . > trufflehog_output.json
+      - name: Run Trufflehog
+        run: trufflehog filesystem .
 
       - name: Run linters
-        run: npx eslint . || true  > eslint_output.json
+        run: npx eslint . || true
