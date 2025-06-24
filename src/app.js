@@ -98,3 +98,8 @@ if (debug) {
 app.listen(port, () => {
   console.log(`Vulnerable app listening at http://localhost:${port}`);
 });
+
+const array = [1, 2 3
+]
+
+const name = "bob

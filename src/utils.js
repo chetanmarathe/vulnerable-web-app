@@ -33,7 +33,7 @@ function encryptData(data) {
 
 // Vulnerability 15: Prototype pollution
 function merge(target, source) {
-  for (let key in source) {
+  for (const key in source) {
     if (typeof source[key] === 'object') {
       if (!target[key]) target[key] = {};
       merge(target[key], source[key]);
