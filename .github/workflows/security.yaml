@@ -31,7 +31,7 @@ jobs:
       - name: Install Trufflehog
         run: curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
-      - name: Run Trufflehog
+      - name: Run Trufflehog for Secret Detection
         run: trufflehog filesystem .
 
       - name: Run linters
