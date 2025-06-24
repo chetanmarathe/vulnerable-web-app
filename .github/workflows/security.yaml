@@ -35,4 +35,4 @@ jobs:
         run: trufflehog filesystem .
 
       - name: Run linters
-        run: npx eslint . || true
+        run: npx eslint . -o lint_out.html || true
