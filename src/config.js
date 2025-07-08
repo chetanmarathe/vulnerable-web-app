@@ -8,7 +8,8 @@ const AWS_ACCOUNT_ID = '123456789012';
 
 // Database connection strings
 const MONGODB_URI = 'mongodb+srv://admin:SuperSecretPassword123@cluster0.mongodb.net/vulnerable-db?retryWrites=true&w=majority';
-const POSTGRES_CONNECTION = 'postgresql://dbuser:dbpass123@database.server.com:5432/mydb';
+const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD;
+const POSTGRES_CONNECTION = `postgresql://dbuser:${POSTGRES_PASSWORD}@database.server.com:5432/mydb`;
 
 // API keys
 const STRIPE_API_KEY = 'sk_test_51HCOHtGswqtO1FPdONKgAAAjkwoefijasefijasefijasef';
