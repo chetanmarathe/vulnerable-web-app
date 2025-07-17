@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Build and Scan Docker Image
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -22,5 +22,25 @@ jobs:
         with:
           context: .
           push: false
-          tags: vulnerable-app:latest
+          load: true
+          tags: vulnerable-app:${{ github.sha }}
           cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Snyk to check Docker image for vulnerabilities
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: vulnerable-app:${{ github.sha }}
+          args: --file=Dockerfile --severity-threshold=high
+        continue-on-error: true
+
+      - name: Monitor Docker image in Snyk
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: vulnerable-app:${{ github.sha }}
+          command: monitor
+          args: --file=Dockerfile
