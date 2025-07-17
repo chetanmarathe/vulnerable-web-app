@@ -33,8 +33,15 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: vulnerable-app:${{ github.sha }}
-          args: --file=Dockerfile --severity-threshold=high
+          args: --file=Dockerfile --severity-threshold=high  --json-file-output=snyk-results.json
         continue-on-error: true
+        
+      - name: Upload Snyk results
+        uses: actions/upload-artifact@v3
+        with:
+          name: snyk-scan-results
+          path: snyk-results.json
+        if: always()
 
       - name: Monitor Docker image in Snyk
         uses: snyk/actions/docker@master
