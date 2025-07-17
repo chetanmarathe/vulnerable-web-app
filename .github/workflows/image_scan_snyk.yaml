@@ -31,7 +31,7 @@ jobs:
           load: true
           tags: |
             vulnerable-app:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/vulnerable-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/vulnerable-app:${{ github.sha }}
             ${{ secrets.DOCKERHUB_USERNAME }}/vulnerable-app:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
