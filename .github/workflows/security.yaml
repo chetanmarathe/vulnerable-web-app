@@ -1,38 +1,54 @@
-name: Lint
+name: Snyk Container Scan
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
   push:
-    branches:
-      - main
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
+  workflow_dispatch:
 
 jobs:
-  run-linters:
-    name: Run linters
+  snyk-container-scan:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out Git repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
+      - name: Build Docker image
+        run: docker build -t vulnerable-app:${{ github.sha }} .
+
+      - name: Run Snyk to check Docker image for vulnerabilities
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          node-version: 20
+          image: vulnerable-app:${{ github.sha }}
+          args: --file=Dockerfile --severity-threshold=high
+        continue-on-error: true
 
-      # ESLint and Prettier must be in `package.json`
-      - name: Install Node.js dependencies
-        run: npm install
+      - name: Print Snyk scan results
+        run: |
+          echo "Snyk Container Scan Results:"
+          snyk container test vulnerable-app:${{ github.sha }} --json | tee snyk-results.json
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+        
+      - name: Monitor Docker image in Snyk
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: vulnerable-app:${{ github.sha }}
+          command: monitor
+          args: --file=Dockerfile
 
-      - name: Install Trufflehog
-        run: curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
-
-      - name: Run Trufflehog for Secret Detection
-        run: trufflehog filesystem .
-
-      - name: Run linters
-        run: npx eslint . -o lint_out.html || true
+      - name: Upload Snyk scan results to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
+        if: always()
