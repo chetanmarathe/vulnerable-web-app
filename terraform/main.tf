@@ -10,7 +10,7 @@ resource "aws_s3_bucket" "app_bucket" {
 }
 
 resource "aws_db_instance" "app_database" {
-  allocated_storage    = 20
+  allocated_storage    = 10
   engine               = "mysql"
   engine_version       = "5.7"
   instance_class       = "db.t2.micro"
